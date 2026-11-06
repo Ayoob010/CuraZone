@@ -1,0 +1,15 @@
+{% extends 'base_mobile.html' %}
+
+{% block content %}
+<div class="section" style="text-align:center; padding-top:40px;">
+  <div style="font-size:60px; margin-bottom:20px;">✅</div>
+  <h2 style="margin-bottom:10px;">Payment Successful!</h2>
+  <p style="color:#64748b; margin-bottom:30px;">Your appointment has been confirmed.</p>
+
+  <div style="display:flex; flex-direction:column; gap:10px;">
+    <a href="{% url 'my_appointments' %}" class="btn btn-primary">View Appointments</a>
+    <a href="{% url 'home' %}" class="btn" style="background:#fff; color:#3b82f6; border:1px solid #3b82f6;">Back to
+      Home</a>
+  </div>
+</div>
+{% endblock %}

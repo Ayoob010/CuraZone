@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register – Pharmacy App</title>
+
+  <style>
+    body {
+      background: #f2f6fb;
+      padding: 20px;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    .page-wrap {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .form-wrap {
+      padding: 30px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .extra {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .extra a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+  {% if messages %}
+  {% for message in messages %}
+  <p style="color:red;text-align:center;">{{ message }}</p>
+  {% endfor %}
+  {% endif %}
+
+
+  <div class="page-wrap">
+    <div class="form-wrap">
+      <h2>Create Account</h2>
+
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <input type="text" name="name" placeholder="Full Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="text" name="phone" placeholder="Phone Number" required>
+        <input type="password" name="password" placeholder="Password" required>
+
+        <select name="gender" required>
+          <option value="">Select Gender</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+
+        <select name="role" id="role" required>
+          <option value="">Select User Type</option>
+          <option value="patient">Patient</option>
+          <option value="doctor">Doctor</option>
+        </select>
+
+        <div id="specialization-box" style="display:none;margin-top:10px;">
+          <select name="specialization" id="specialization">
+            <option value="">Select Specialization</option>
+            <option value="cardiology">Cardiology</option>
+            <option value="neurology">Neurology</option>
+            <option value="ent">ENT</option>
+            <option value="gynecology">Gynecology</option>
+            <option value="pediatrics">Pediatrics</option>
+            <option value="orthopedics">Orthopedics</option>
+            <option value="dermatology">Dermatology</option>
+            <option value="general">General Physician</option>
+          </select>
+        </div>
+
+        <div id="id-proof-box" style="display:none;margin-top:10px;">
+          <label style="display:block; margin-bottom:5px; font-weight:600;">Upload ID Proof (Required for
+            Doctors)</label>
+          <input type="file" name="id_proof" id="id_proof_input" accept="image/*,application/pdf">
+        </div>
+
+        <div id="experience-box" style="display:none;margin-top:10px;">
+          <input type="number" name="experience" id="experience_input" placeholder="Years of Experience" min="0">
+        </div>
+
+
+        <input type="number" name="age" placeholder="Age" required>
+        <textarea name="address" placeholder="Address" rows="3"></textarea>
+
+        <!-- New Fields -->
+        <select name="blood_type" required>
+          <option value="">Select Blood Type</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+        </select>
+
+        <input type="number" name="weight" placeholder="Weight (kg)" step="0.1" required>
+        <input type="number" name="height" placeholder="Height (cm)" step="0.1" required>
+
+        <!-- Health Conditions / Allergies (Patient Only) -->
+        <div id="health-conditions-box">
+          <label style="display:block; margin-bottom:5px; font-weight:600; font-size:14px;">
+            🏥 Health Conditions / Allergies
+          </label>
+          <input type="text" name="health_conditions"
+            placeholder="e.g. Pregnant, Diabetes, Penicillin allergy (comma separated)">
+          <small style="color:#64748b; font-size:12px; display:block; margin-top:-10px; margin-bottom:10px;">
+            This helps us show safety warnings on medicines
+          </small>
+        </div>
+
+        <input type="file" name="image">
+
+        <button type="submit">Register</button>
+      </form>
+      <div class="extra">
+        Already have an account?
+        <a href="{% url 'login' %}">Login</a>
+      </div>
+    </div>
+
+
+  </div>
+  <script>
+    const roleSelect = document.getElementById("role");
+    const specBox = document.getElementById("specialization-box");
+    const specSelect = document.getElementById("specialization");
+    const idBox = document.getElementById("id-proof-box");
+    const idInput = document.getElementById("id_proof_input");
+    const expBox = document.getElementById("experience-box");
+    const expInput = document.getElementById("experience_input");
+
+    roleSelect.addEventListener("change", function () {
+      if (this.value === "doctor") {
+        specBox.style.display = "block";
+        specSelect.required = true;
+        idBox.style.display = "block";
+        idInput.required = true;
+        expBox.style.display = "block";
+        expInput.required = true;
+      } else {
+        specBox.style.display = "none";
+        specSelect.required = false;
+        specSelect.value = "";
+        idBox.style.display = "none";
+        idInput.required = false;
+        idInput.value = "";
+        expBox.style.display = "none";
+        expInput.required = false;
+        expInput.value = "";
+      }
+    });
+  </script>
+</body>
+
+</html>

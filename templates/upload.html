@@ -1,0 +1,159 @@
+{% extends 'base_mobile.html' %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+  .drop-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    background: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-bottom: 20px;
+  }
+
+  .drop-area.drag-over {
+    border-color: #3b82f6;
+    background: #eff6ff;
+  }
+
+  .drop-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #3b82f6;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="section">
+  <div class="card">
+    <h2 style="margin-top:0;">Upload Prescription</h2>
+    <p style="color:#64748b; font-size:14px; margin-bottom:20px;">Upload your prescription to order medicines
+      automatically.</p>
+
+    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+      {% csrf_token %}
+
+      <div id="dropArea" class="drop-area">
+        <div class="drop-icon">⬆️</div>
+        <div style="font-weight:600; margin-bottom:4px;">Drag & drop or Click</div>
+        <div style="font-size:12px; color:#64748b; margin-bottom:15px;">JPG, PNG, PDF (Max 5MB)</div>
+
+        <input id="fileInput" name="prescription_file" type="file" accept=".jpg,.jpeg,.png,.pdf" style="display:none"
+          required />
+        <button type="button" id="browseBtn" class="btn btn-primary" style="padding:8px 16px; font-size:13px;">Browse
+          Files</button>
+      </div>
+
+      <div id="filePreview" style="margin-bottom:20px; text-align:center;"></div>
+
+      <textarea name="notes" placeholder="Enter symptoms or notes (optional)" rows="3"
+        style="width:100%; padding:12px; border-radius:10px; border:1px solid #cbd5e1; margin-bottom:20px; resize:none; font-family:inherit;"></textarea>
+
+      <button type="submit" class="submit-btn" id="submitBtn">Submit Prescription</button>
+    </form>
+
+    <div style="margin-top:20px; background:#eff6ff; padding:15px; border-radius:10px;">
+      <strong style="color:#1e3a8a; display:block; margin-bottom:8px;">💡 Guidelines</strong>
+      <ul style="margin:0; padding-left:20px; color:#334155; font-size:13px;">
+        <li>Ensure text is clear and readable</li>
+        <li>Include doctor's name/signature</li>
+        <li>Valid within 6 months</li>
+        <li>Medicines will be auto-added to cart</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const fileInput = document.getElementById('fileInput');
+    const browseBtn = document.getElementById('browseBtn');
+    const dropArea = document.getElementById('dropArea');
+    const filePreview = document.getElementById('filePreview');
+    const notesArea = document.querySelector('textarea[name="notes"]');
+    const submitBtn = document.getElementById('submitBtn');
+    const MAX_BYTES = 5 * 1024 * 1024;
+
+    // Make whole drop area clickable
+    dropArea.addEventListener('click', (e) => {
+      if (e.target !== browseBtn) fileInput.click();
+    });
+
+    browseBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent double click
+      fileInput.click();
+    });
+
+    function handleFile(file) {
+      if (!file) return;
+      if (file.size > MAX_BYTES) {
+        alert('File is larger than 5MB.');
+        return;
+      }
+
+      // Show preview
+      if (file.type.startsWith('image/')) {
+        const url = URL.createObjectURL(file);
+        filePreview.innerHTML = `<img src="${url}" style="max-width:100%; border-radius:8px; max-height:200px;" />`;
+
+        // OCR
+        if (notesArea) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Analyzing Image...";
+          notesArea.value = "Analyzing prescription...";
+
+          Tesseract.recognize(
+            file,
+            'eng'
+          ).then(({ data: { text } }) => {
+            console.log("OCR Result:", text);
+            notesArea.value = text;
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Prescription";
+          }).catch(err => {
+            console.error(err);
+            notesArea.value = "";
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Prescription";
+            alert("OCR failed, can proceed manually.");
+          });
+        }
+      } else {
+        filePreview.innerHTML = `<div style="padding:10px; background:#f1f5f9; border-radius:8px;">📄 ${file.name}</div>`;
+      }
+    }
+
+    fileInput.addEventListener('change', (e) => { handleFile(e.target.files[0]); });
+
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropArea.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dropArea.classList.add('drag-over'); });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+      dropArea.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dropArea.classList.remove('drag-over'); });
+    });
+    dropArea.addEventListener('drop', e => { handleFile(e.dataTransfer.files[0]); });
+  })();
+</script>
+{% endblock %}

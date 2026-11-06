@@ -1,0 +1,49 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div class="card">
+  <h2>My Prescriptions</h2>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Patient</th>
+        <th>Date</th>
+        <th>Notes</th>
+        <th>File</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in prescriptions %}
+      <tr>
+        <td>
+          <div style="font-weight:600;">{{ p.patient.fullname }}</div>
+        </td>
+        <td>{{ p.date }}</td>
+        <td>{{ p.notes|truncatechars:50 }}</td>
+        <td>
+          {% if p.uploaded_file %}
+          <a href="{{ p.uploaded_file.url }}" target="_blank" style="color:#2563eb; text-decoration:underline;">View
+            File</a>
+          {% else %}
+          <span style="color:#94a3b8;">-</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if p.verified %}
+          <span style="color:#16a34a; font-weight:600;">Verified</span>
+          {% else %}
+          <span style="color:#ca8a04; font-weight:600;">Pending</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" style="text-align:center; padding:20px; color:#64748b;">No prescriptions created yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

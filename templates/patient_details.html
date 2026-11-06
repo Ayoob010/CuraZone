@@ -1,0 +1,49 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div class="card">
+  <h2>Patient Details</h2>
+
+  {% if patients %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Address</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for patient in patients %}
+      <tr>
+        <td>
+          <div style="font-weight:600;">{{ patient.fullname }}</div>
+        </td>
+        <td>{{ patient.email }}</td>
+        <td>{{ patient.phone }}</td>
+        <td>{{ patient.age }}</td>
+        <td>{{ patient.gender }}</td>
+        <td>{{ patient.address }}</td>
+        <td><span style="color:#16a34a; font-weight:600;">Active</span></td>
+        <td>
+          <form method="post" action="{% url 'delete_patient' patient.id %}"
+            onsubmit="return confirm('Delete this patient?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" style="padding:6px 12px; font-size:12px;">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="text-align:center; padding:20px; color:#64748b;">No patients found.</div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; height: 80vh;">
+    <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 15px;">
+        <h2>{{ group.name }}</h2>
+    </div>
+
+    <div style="flex:1; overflow-y:auto; padding-right:10px; display:flex; flex-direction:column; gap:10px;">
+        {% for msg in chat_messages %}
+        <div style="max-width:70%; padding:12px; border-radius:12px; font-size:14px;
+          {% if msg.user == request.user %}
+              align-self:flex-end; background:#eff6ff; border:1px solid #dbeafe;
+          {% else %}
+              align-self:flex-start; background:#f8fafc; border:1px solid #e2e8f0;
+          {% endif %}">
+            <div style="font-weight:600; font-size:12px; margin-bottom:4px; color:#64748b;">{{ msg.user.fullname }}
+            </div>
+            {{ msg.message }}
+            {% if is_admin %}
+            <div style="margin-top:4px;">
+                <a href="{% url 'delete_message' msg.id %}" style="font-size:11px; color:#ef4444;">Delete</a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <form method="post"
+        style="margin-top:15px; display:flex; gap:10px; border-top:1px solid #f1f5f9; padding-top:15px;">
+        {% csrf_token %}
+        <input type="text" name="message" placeholder="Type your message..." required style="flex:1; margin-bottom:0;">
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+</div>
+{% endblock %}

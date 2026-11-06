@@ -1,0 +1,279 @@
+{% extends 'base_mobile.html' %}
+
+{% block content %}
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+  }
+
+  body {
+    background: #f2f6fb;
+    padding: 20px;
+  }
+
+  .page-wrap {
+    max-width: 420px;
+    margin: auto;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    padding: 20px;
+  }
+
+  .header .small {
+    font-size: 14px;
+  }
+
+  .body-content {
+    padding: 16px;
+  }
+
+  .cart-card {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #f9fafb;
+    margin-bottom: 12px;
+  }
+
+  .cart-thumb {
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+    background: #eef2ff;
+  }
+
+  .cart-body {
+    flex: 1;
+  }
+
+  .cart-title {
+    font-weight: 600;
+  }
+
+  .small-muted {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .summary-box {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .summary-row.total {
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .user-details {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+
+  .user-details div {
+    margin-bottom: 6px;
+  }
+
+  .cart-cta {
+    padding: 15px;
+    background: #fff;
+    position: sticky;
+    bottom: 0;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #3b82f6;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
+
+
+<main class="page-wrap">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="small">Checkout</div>
+  </header>
+
+  <div class="body-content">
+
+    <!-- USER DETAILS -->
+    <div class="user-details">
+      <div><strong>Name:</strong> {{ user.fullname }}</div>
+      <div><strong>Email:</strong> {{ user.email }}</div>
+      <div><strong>Phone:</strong> {{ user.phone|default:"-" }}</div>
+      <div><strong>Address:</strong> {{ user.address|default:"-" }}</div>
+    </div>
+
+    <!-- ORDER ITEMS -->
+    {% for item in cart_items %}
+    <div class="cart-card">
+      <div
+        style="width:60px; height:60px; background:#f1f5f9; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+        {% if item.image_url %}
+          <img src="{{ item.image_url }}" alt="{{ item.product.name }}" style="width:100%; height:100%; object-fit:cover;">
+        {% else %}
+          <span style="font-size:24px;">
+            {% if item.product.category == 'medicine' %}💊{% elif item.product.category == 'device' %}🩺
+            {% else %}🧴{% endif %}
+          </span>
+        {% endif %}
+      </div>
+      <div class="cart-body">
+        <div class="cart-title">{{ item.product.name }}</div>
+        <div class="small-muted">{{ item.product.category }}</div>
+        <div class="small-muted">Qty: {{ item.quantity }}</div>
+        <div class="small-muted">₹{{ item.subtotal }}</div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- PRESCRIPTION VERIFICATION SECTION -->
+    {% if prescription_needed %}
+    <div class="user-details" id="rx-verification-section" style="border: 2px solid #3b82f6; background: #eff6ff;">
+      <h3 style="margin-bottom:10px; color:#2563eb; font-size:16px;">📄 Prescription Required</h3>
+      <p style="font-size:12px; color:#64748b; margin-bottom:15px;">One or more items in your cart require a doctor's prescription. Please upload an image of your prescription to verify.</p>
+      
+      <div style="margin-bottom:15px;">
+        <input type="file" id="rx-image" accept="image/*" style="width:100%; padding:10px; border:1px solid #dbeafe; border-radius:8px; background:white;">
+      </div>
+
+      <button type="button" id="verify-btn" onclick="verifyPrescription()" class="btn" style="background:#2563eb; margin-bottom:10px;">Verify Prescription</button>
+      
+      <div id="ocr-status" style="font-size:13px; font-weight:600; text-align:center; display:none; padding:10px; border-radius:8px;"></div>
+    </div>
+    {% endif %}
+
+    <!-- TOTAL SUMMARY -->
+    <div class="summary-box">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span>₹{{ total }}</span>
+      </div>
+      <div class="summary-row total">
+        <span>Grand Total</span>
+        <span>₹{{ total }}</span>
+      </div>
+    </div>
+
+    <!-- PAY BUTTON -->
+    <div class="cart-cta">
+        <a href="{% url 'payment' %}" id="pay-btn" class="btn" 
+           {% if prescription_needed %}style="background:#94a3b8; pointer-events:none; opacity:0.6;"{% endif %}>
+           {% if prescription_needed %}Verify Prescription First{% else %}Pay ₹{{ total }}{% endif %}
+        </a>
+    </div>
+
+  </div>
+</main>
+
+{% if prescription_needed %}
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+    const rxProducts = {{ rx_product_names|safe }};
+    
+    async function verifyPrescription() {
+        const fileInput = document.getElementById('rx-image');
+        const statusDiv = document.getElementById('ocr-status');
+        const verifyBtn = document.getElementById('verify-btn');
+        const payBtn = document.getElementById('pay-btn');
+
+        if (!fileInput.files || !fileInput.files[0]) {
+            alert("Please select a prescription image first.");
+            return;
+        }
+
+        statusDiv.style.display = 'block';
+        statusDiv.style.background = '#fef3c7';
+        statusDiv.style.color = '#92400e';
+        statusDiv.innerText = "⏳ Scanning prescription... Please wait.";
+        verifyBtn.disabled = true;
+        verifyBtn.style.opacity = '0.5';
+
+        try {
+            const result = await Tesseract.recognize(
+                fileInput.files[0],
+                'eng',
+                { logger: m => console.log(m) }
+            );
+
+            const text = result.data.text.toLowerCase();
+            console.log("Extracted Text:", text);
+
+            let foundAll = true;
+            let missing = [];
+
+            rxProducts.forEach(prod => {
+                // simple inclusion check
+                if (!text.includes(prod)) {
+                    // check normalized (strip spaces)
+                    const cleanProd = prod.replace(/[^a-z0-9]/g, '');
+                    const cleanText = text.replace(/[^a-z0-9]/g, '');
+                    if (!cleanText.includes(cleanProd)) {
+                        foundAll = false;
+                        missing.push(prod);
+                    }
+                }
+            });
+
+            if (foundAll) {
+                statusDiv.style.background = '#d1fae5';
+                statusDiv.style.color = '#065f46';
+                statusDiv.innerHTML = "✅ Verification Successful! You can proceed to payment.";
+                
+                payBtn.style.background = '#3b82f6';
+                payBtn.style.pointerEvents = 'auto';
+                payBtn.style.opacity = '1';
+                payBtn.innerText = "Pay ₹{{ total }}";
+                
+                document.getElementById('rx-verification-section').style.borderColor = '#10b981';
+            } else {
+                statusDiv.style.background = '#fee2e2';
+                statusDiv.style.color = '#991b1b';
+                statusDiv.innerHTML = "❌ Verification Failed.<br>Could not find: " + missing.join(', ') + "<br><small>Please try a clearer image.</small>";
+                verifyBtn.disabled = false;
+                verifyBtn.style.opacity = '1';
+            }
+
+        } catch (error) {
+            console.error(error);
+            statusDiv.style.background = '#fee2e2';
+            statusDiv.style.color = '#991b1b';
+            statusDiv.innerText = "⚠️ Error scanning image. Try again.";
+            verifyBtn.disabled = false;
+            verifyBtn.style.opacity = '1';
+        }
+    }
+</script>
+{% endif %}
+
+{% endblock %}

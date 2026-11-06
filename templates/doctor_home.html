@@ -1,0 +1,47 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div style="text-align:center; padding: 40px 20px;">
+    <h1 style="font-size:32px; color:#1e293b; margin-bottom:10px;">Doctor Dashboard</h1>
+    <p style="color:#64748b; font-size:16px;">Welcome back, Dr. {{ request.user.fullname }}</p>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:25px; padding:20px;">
+
+    <a href="{% url 'doctor_appointments' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">📅</div>
+        <h3 style="margin:0; color:#2563eb;">Appointments</h3>
+        <p style="color:#64748b; margin-top:5px;">View upcoming visits</p>
+    </a>
+
+    <a href="{% url 'doctor_create_prescription' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">📝</div>
+        <h3 style="margin:0; color:#16a34a;">Create Prescription</h3>
+        <p style="color:#64748b; margin-top:5px;">Write new Rx for patients</p>
+    </a>
+
+    <a href="{% url 'doctor_prescriptions' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">📄</div>
+        <h3 style="margin:0; color:#8b5cf6;">History</h3>
+        <p style="color:#64748b; margin-top:5px;">View past prescriptions</p>
+    </a>
+
+    <a href="{% url 'group_list' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">👥</div>
+        <h3 style="margin:0; color:#f97316;">Community</h3>
+        <p style="color:#64748b; margin-top:5px;">Join medical discussions</p>
+    </a>
+
+    <a href="{% url 'profile' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">👤</div>
+        <h3 style="margin:0; color:#64748b;">Profile</h3>
+        <p style="color:#64748b; margin-top:5px;">Manage details</p>
+    </a>
+
+</div>
+{% endblock %}

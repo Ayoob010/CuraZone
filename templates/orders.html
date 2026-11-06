@@ -1,0 +1,39 @@
+{% extends 'base_mobile.html' %}
+
+{% block content %}
+<div class="section">
+  <h2 style="margin-top:0;">My Orders</h2>
+
+  {% if orders %}
+  {% for order in orders %}
+  <div class="card">
+    <div style="font-weight:600; margin-bottom:8px;">Order #{{ forloop.counter }}</div>
+    <div style="font-size:13px; color:#64748b; margin-bottom:12px;">
+      Placed by: {{ order.user.fullname }}<br>
+      Date: {{ order.created_at|date:"d M Y" }}
+    </div>
+
+    <div style="border-top:1px solid #f1f5f9; border-bottom:1px solid #f1f5f9; padding:10px 0; margin-bottom:10px;">
+      {% for item in order.items.all %}
+      <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px;">
+        <span>{{ item.product.name }} x {{ item.quantity }}</span>
+        <span>₹{{ item.price }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div style="font-weight:700;">Total: ₹{{ order.total_amount }}</div>
+      <span style="font-size:12px; padding:4px 10px; background:#eff6ff; color:#3b82f6; border-radius:12px;">
+        {{ order.status }}</span>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div style="text-align:center; padding:40px 0; color:#94a3b8;">
+    <div style="font-size:40px; margin-bottom:10px;">📦</div>
+    <div>No orders yet</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base_mobile.html' %}
+
+{% block content %}
+<div class="section">
+    <div class="card" style="text-align:center; padding:30px 20px;">
+        {% if request.user.profile %}
+            <img 
+                src="{{ request.user.profile.url }}" 
+                alt="Profile Photo"
+                style="width:80px; height:80px; border-radius:50%; object-fit:cover;"
+            >
+        {% else %}
+            <div
+                style="width:80px; height:80px; background:#3b82f6; border-radius:50%;
+                    display:flex; align-items:center; justify-content:center;
+                    color:#fff; font-size:32px; font-weight:bold;">
+                {{ request.user.fullname|slice:":1"|upper }}
+            </div>
+        {% endif %}
+
+        <h2 style="margin:0;">{{ request.user.fullname }}</h2>
+        <div style="color:#64748b; margin-top:4px;">{{ request.user.email }}</div>
+        <div style="margin-top:10px;">
+            <span
+                style="background:#eff6ff; color:#3b82f6; padding:4px 12px; border-radius:12px; font-size:13px; font-weight:600; text-transform:uppercase;">
+                {{ request.user.role }}
+            </span>
+        </div>
+        <a href="{% url 'edit_profile' %}" class="btn"
+            style="display:block; margin: 15px auto 0; background:#3b82f6; color:white; width:fit-content; padding:8px 20px; border-radius:20px; text-decoration:none; font-size:14px;">
+            Edit Profile
+        </a>
+    </div>
+
+    <!-- Stats Grid -->
+    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:20px;">
+        <div class="card" style="text-align:center; padding:15px; margin:0;">
+            <div style="font-size:12px; color:#64748b;">Weight</div>
+            <div style="font-size:16px; font-weight:600;">{{ request.user.weight_kg|default:"-" }} kg</div>
+        </div>
+        <div class="card" style="text-align:center; padding:15px; margin:0;">
+            <div style="font-size:12px; color:#64748b;">Height</div>
+            <div style="font-size:16px; font-weight:600;">{{ request.user.height_cm|default:"-" }} cm</div>
+        </div>
+        <div class="card" style="text-align:center; padding:15px; margin:0;">
+            <div style="font-size:12px; color:#64748b;">Blood Type</div>
+            <div style="font-size:16px; font-weight:600;">{{ request.user.blood_type|default:"-" }}</div>
+        </div>
+        <div class="card" style="text-align:center; padding:15px; margin:0;">
+            <div style="font-size:12px; color:#64748b;">Age</div>
+            <div style="font-size:16px; font-weight:600;">{{ request.user.age|default:"-" }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0; font-size:16px;">Quick Links</h3>
+        <a href="{% url 'my_orders' %}"
+            style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f1f5f9; text-decoration:none; color:#333;">
+            <span style="font-size:18px;">📦</span> My Orders
+        </a>
+        <a href="{% url 'payment_success' %}"
+            style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f1f5f9; text-decoration:none; color:#333;">
+            <span style="font-size:18px;">💳</span> Payments
+        </a>
+        <a href="{% url 'logout' %}"
+            style="display:flex; align-items:center; gap:12px; padding:12px 0; text-decoration:none; color:#ef4444;">
+            <span style="font-size:18px;">🚪</span> Logout
+        </a>
+    </div>
+</div>
+{% endblock %}

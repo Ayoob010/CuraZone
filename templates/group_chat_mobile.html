@@ -1,0 +1,34 @@
+{% extends 'base_mobile.html' %}
+
+{% block content %}
+<div class="section" style="display: flex; flex-direction: column; height: calc(100vh - 140px);">
+    <!-- Adjust for header/footer -->
+    <div class="card" style="flex:1; display:flex; flex-direction:column; margin-bottom:0; padding:15px;">
+        <h3 style="margin-top:0; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">{{ group.name }}</h3>
+
+        <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding:10px 0;">
+            {% for msg in chat_messages %}
+            <div style="max-width:85%; padding:10px; border-radius:12px; font-size:14px;
+                {% if msg.user == request.user %}
+                    align-self:flex-end; background:#3b82f6; color:#fff; border-bottom-right-radius:2px;
+                {% else %}
+                    align-self:flex-start; background:#f1f5f9; color:#333; border-bottom-left-radius:2px;
+                {% endif %}">
+                <div style="font-size:11px; opacity:0.8; margin-bottom:2px;">{{ msg.user.fullname }}</div>
+                {{ msg.message }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <form method="post" style="display:flex; gap:10px; border-top:1px solid #f1f5f9; padding-top:10px;">
+            {% csrf_token %}
+            <input type="text" name="message" placeholder="Type..." required
+                style="flex:1; padding:10px 14px; border-radius:20px; border:1px solid #cbd5e1; outline:none;">
+            <button type="submit"
+                style="width:40px; height:40px; background:#3b82f6; color:#fff; border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                ➤
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

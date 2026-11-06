@@ -1,0 +1,36 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+  <h2>Create Prescription</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div style="margin-bottom: 20px;">
+      <label for="patient" style="display:block; margin-bottom: 8px; font-weight:600;">Select Patient</label>
+      <select name="patient" required style="width:100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+        {% for p in patients %}
+        <option value="{{ p.id }}">{{ p.fullname }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <label for="notes" style="display:block; margin-bottom: 8px; font-weight:600;">Prescription Notes</label>
+      <textarea name="notes" rows="6" placeholder="Enter medicines, dosage, instructions..." required
+        style="width:100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;"></textarea>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <label for="uploaded_file" style="display:block; margin-bottom: 8px; font-weight:600;">Optional File
+        Upload</label>
+      <input type="file" name="uploaded_file" class="form-control"
+        style="width:100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width:100%; padding: 12px; font-size: 16px;">Create
+      Prescription</button>
+  </form>
+</div>
+{% endblock %}

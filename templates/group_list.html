@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Community Groups</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Reset & basic styles */
+        * { box-sizing: border-box; margin:0; padding:0; font-family: "Segoe UI", Arial, sans-serif; }
+        body { background: #f2f6fb; color: #1e293b; }
+        h2 { text-align: center; color: #3b82f6; margin: 20px 0; }
+
+        a { text-decoration: none; transition: all 0.2s ease; }
+
+        /* Container */
+        .container { max-width: 900px; margin: auto; padding: 10px; }
+
+        /* Group cards for mobile (patients) */
+        {% if request.user.role == "patient" %}
+        .group-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .group-name { font-weight: 600; font-size: 16px; color: #2563eb; }
+        .group-desc { font-size: 14px; color: #475569; }
+        .group-actions { display: flex; gap: 8px; margin-top: 6px; }
+        .group-actions a {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+        }
+        .join { background: #10b981; }
+        .leave { background: #ef4444; }
+        .open-chat { background: #3b82f6; }
+
+        /* Scrollable for small devices */
+        @media (max-width: 600px) {
+            .container { padding: 8px; }
+        }
+        {% endif %}
+
+        /* System view for admin/doctors */
+        {% if request.user.role == "admin" or request.user.role == "doctor" %}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+        }
+        th { background: #3b82f6; color: #fff; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+        }
+        .join { background: #10b981; }
+        .leave { background: #ef4444; }
+        .open-chat { background: #3b82f6; }
+        {% endif %}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Community Groups</h2>
+
+    {% if request.user.role == "patient" %}
+        {% for group in groups %}
+        <div class="group-card">
+            <div class="group-name">{{ group.name }}</div>
+            <div class="group-desc">{{ group.description }}</div>
+            <div class="group-actions">
+                {% if group.id in joined_group_ids %}
+                    <a href="{% url 'group_chat' group.id %}" class="open-chat">Open Chat</a>
+                    <a href="{% url 'leave_group' group.id %}" class="leave">Leave</a>
+                {% else %}
+                    <a href="{% url 'join_group' group.id %}" class="join">Join</a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p style="text-align:center; color:#475569;">No groups available</p>
+        {% endfor %}
+    {% endif %}
+
+    {% if request.user.role == "admin" or request.user.role == "doctor" %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                <tr>
+                    <td>{{ group.name }}</td>
+                    <td>{{ group.description }}</td>
+                    <td style="display:flex; gap:6px;">
+                        {% if group.id in joined_group_ids %}
+                            <a href="{% url 'group_chat' group.id %}" class="action-btn open-chat">Open Chat</a>
+                            <a href="{% url 'leave_group' group.id %}" class="action-btn leave">Leave</a>
+                        {% else %}
+                            <a href="{% url 'join_group' group.id %}" class="action-btn join">Join</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align:center; color:#475569;">No groups available</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2>Doctors List</h2>
+        <!-- Could add 'Add Doctor' button here if needed -->
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Specialization</th>
+                <th>Experience</th>
+                <th>ID Proof</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doctor in doctors %}
+            <tr>
+                <td>
+                    <div style="font-weight:600;">{{ doctor.fullname }}</div>
+                    <small style="color:#64748b;">{{ doctor.email }}</small>
+                </td>
+                <td>{{ doctor.get_specialization_display }}</td>
+                <td>{{ doctor.experience|default:"-" }} years</td>
+                {% if doctor.id_proof %}
+                <td>
+                    <a href="{{ doctor.id_proof.url }}" target="_blank">View</a>
+                </td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                <td>
+                    {% if doctor.status == 'active' or doctor.status == 'accepted' %}
+                    <span style="color:#16a34a; font-weight:600;">Active</span>
+                    {% elif doctor.status == 'pending' %}
+                    <span style="color:#ca8a04; font-weight:600;">Pending</span>
+                    {% else %}
+                    <span style="color:#ef4444; font-weight:600;">{{ doctor.status }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="display:flex; gap:10px;">
+                        {% if doctor.status == 'pending' %}
+                        <a href="{% url 'accept' doctor.id %}" class="btn btn-primary"
+                            style="padding:6px 12px; font-size:12px;">Accept</a>
+                        <a href="{% url 'reject' doctor.id %}" class="btn btn-danger"
+                            style="padding:6px 12px; font-size:12px;">Reject</a>
+                        {% endif %}
+
+                        <form method="post" action="{% url 'delete_doctor' doctor.id %}"
+                            onsubmit="return confirm('Delete this doctor?');" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger"
+                                style="padding:6px 12px; font-size:12px;">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align:center; padding:20px; color:#64748b;">No doctors found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

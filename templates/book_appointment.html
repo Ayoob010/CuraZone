@@ -1,0 +1,55 @@
+{% extends 'base_mobile.html' %}
+
+{% block content %}
+<div class="section">
+  <div class="card">
+    <h2 style="margin-top:0;">Book Appointment</h2>
+    <div style="display:flex; gap:15px; margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid #f1f5f9;">
+      <div
+        style="width:50px; height:50px; background:#eff6ff; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#3b82f6; font-size:20px; font-weight:bold;">
+        {{ appointment.doctor.fullname|first }}
+      </div>
+      <div>
+        <h3 style="margin:0; font-size:18px;">{{ appointment.doctor.fullname }}</h3>
+        <div style="color:#64748b; font-size:14px;">{{ appointment.doctor.get_specialization_display }}</div>
+      </div>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      
+      <label style="display:block; margin-bottom:8px; font-weight:600;">Select Date</label>
+      <input type="date" name="appointment_date" id="appointment_date" required
+        onclick="this.showPicker()"
+        style="width:100%; padding:12px; border-radius:10px; border:1px solid #cbd5e1; margin-bottom:20px; font-size:14px;">
+
+
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span style="color:#64748b;">Time</span>
+        <span style="font-weight:600;">{{ appointment.time }}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+        <span style="color:#64748b;">Consultation Fee</span>
+        <span style="font-weight:600; color:#16a34a;">₹{{ appointment.amount }}</span>
+      </div>
+
+      <label style="display:block; margin-bottom:8px; font-weight:600;">Payment Method</label>
+
+      <select name="payment"
+        style="width:100%; padding:12px; border-radius:10px; border:1px solid #cbd5e1; margin-bottom:20px; font-size:14px;">
+        <option value="Net Banking">Net Banking</option>
+        <option value="UPI">UPI</option>
+        <option value="Card">Credit/Debit Card</option>
+      </select>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;">Confirm Booking</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Prevent selecting past dates
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('appointment_date').setAttribute('min', today);
+</script>
+{% endblock %}

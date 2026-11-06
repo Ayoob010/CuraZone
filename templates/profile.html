@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>User Profile</title>
+<style>
+/* ===== RESET ===== */
+* { box-sizing: border-box; font-family:"Segoe UI", Arial, sans-serif; }
+body { margin:0; background:#f2f6fb; display:flex; justify-content:center; }
+
+/* ===== PROFILE CONTAINER ===== */
+.profile-page { width:100%; max-width:420px; background:#f2f6fb; min-height:100vh; }
+
+/* ===== PROFILE HEADER ===== */
+.profile-header { background: linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; border-radius:0 0 24px 24px; padding:18px; }
+.profile-top { display:flex; gap:14px; align-items:center; }
+.profile-avatar { width:64px; height:64px; background:rgba(255,255,255,.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:18px; }
+.profile-name { font-size:18px; font-weight:600; }
+.profile-email { font-size:13px; opacity:.9; }
+.profile-badge { margin-top:6px; display:inline-block; background:rgba(255,255,255,.25); padding:4px 12px; border-radius:14px; font-size:12px; text-transform:capitalize; }
+
+/* ===== STATS ===== */
+.profile-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:16px; }
+.stat-card { background:rgba(255,255,255,.2); padding:10px; border-radius:12px; text-align:center; }
+.stat-title { font-size:11px; opacity:.9; }
+.stat-val { font-size:14px; font-weight:600; }
+
+/* ===== BODY ===== */
+.body-content { padding:16px; }
+
+/* ===== SECTION ===== */
+.section-title { font-weight:600; margin:14px 0 8px; }
+
+/* ===== HEALTH CARD ===== */
+.health-card { background:#fff; border-radius:14px; padding:14px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+.health-top { display:flex; gap:12px; align-items:center; }
+.health-icon { width:40px; height:40px; background:#3b82f6; color:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+.health-stats { display:flex; justify-content:space-around; margin-top:12px; }
+.health-stats div { text-align:center; }
+.h-num { font-size:16px; font-weight:600; }
+
+/* ===== SETTINGS ===== */
+.settings-item { background:#fff; padding:14px; border-radius:14px; display:flex; align-items:center; margin-bottom:10px; text-decoration:none; color:#000; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+.s-left { width:28px; }
+.s-mid { flex:1; }
+
+/* ===== LOGOUT ===== */
+.back-home-btn { display:inline-block; width:100%; text-align:center; padding:12px; margin-top:14px; background:#3b82f6; color:#fff; text-decoration:none; border-radius:14px; font-size:15px; font-weight:500; transition: 0.2s ease, transform 0.15s ease; }
+.back-home-btn:hover { background:#2563eb; transform:translateY(-1px); }
+.back-home-btn:active { transform:translateY(0); }
+</style>
+</head>
+
+<body>
+<div class="profile-page">
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+    <div class="profile-top">
+      <div class="profile-avatar">{{ request.user.email|slice:":2"|upper }}</div>
+      <div>
+        <div class="profile-name">{{ request.user.fullname }}</div>
+        <div class="profile-email">{{ request.user.email }}</div>
+        <div class="profile-badge">{{ request.user.role }}</div>
+      </div>
+    </div>
+
+    <div class="profile-stats">
+      <!-- <div class="stat-card">
+        <div class="stat-title">Gender</div>
+        <div class="stat-val">{{ request.user.gender }}</div>
+      </div> -->
+      <div class="stat-card">
+        <div class="stat-title">Gender</div>
+        <div class="stat-val">{{ request.user.gender }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Height</div>
+        <div class="stat-val">{{ request.user.height_cm }} cm</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Weight</div>
+        <div class="stat-val">{{ request.user.weight_kg }} kg</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Blood Type</div>
+        <div class="stat-val">{{ request.user.blood_type }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body-content">
+    <div class="section-title">Health Records</div>
+    <div class="health-card">
+      <div class="health-top">
+        <div class="health-icon">📘</div>
+        <div>
+          <strong>Medical History</strong><br>
+          <small>Last updated recently</small>
+        </div>
+      </div>
+
+      <div class="health-stats">
+        <div><div class="h-num">5</div><small>Reports</small></div>
+        <div><div class="h-num">8</div><small>Prescriptions</small></div>
+        <div><div class="h-num">12</div><small>Consultations</small></div>
+      </div>
+    </div>
+
+    <div class="section-title">Account</div>
+
+    {% if request.user.role == "patient" %}
+      <a href="{% url 'my_orders' %}" class="settings-item">
+        <div class="s-left">📦</div>
+        <div class="s-mid">My Orders</div>›
+      </a>
+
+      <a href="{% url 'payment_success' %}" class="settings-item">
+        <div class="s-left">💳</div>
+        <div class="s-mid">Payment Status</div>›
+      </a>
+
+      <a href="#" class="settings-item">
+        <div class="s-left">🔒</div>
+        <div class="s-mid">Privacy & Security</div>›
+      </a>
+    {% elif request.user.role == "doctor" %}
+      <a href="{% url 'doctor_appointments' %}" class="settings-item">
+        <div class="s-left">📅</div>
+        <div class="s-mid">Appointments</div>›
+      </a>
+
+      <a href="{% url 'doctor_prescriptions' %}" class="settings-item">
+        <div class="s-left">📄</div>
+        <div class="s-mid">Uploaded Prescriptions</div>›
+      </a>
+    {% endif %}
+
+    <a href="{% url 'home' %}" class="back-home-btn">← Back to Home</a>
+
+  </div>
+  {% include 'footer.html' %}
+</div>
+</body>
+</html>

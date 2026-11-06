@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ group.name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; font-family: "Segoe UI", Arial, sans-serif; margin:0; padding:0; }
+    body { background: #f2f6fb; }
+
+    .chat-container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+    }
+
+    h2 { text-align: center; margin-bottom: 15px; color: #3b82f6; }
+
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .msg {
+      padding: 10px 12px;
+      border-radius: 12px;
+      position: relative;
+      background: #f1f1f1;
+      word-wrap: break-word;
+      max-width: 80%;
+    }
+    .msg.me { background: #d1e7ff; align-self: flex-end; }
+    .msg strong { display:block; margin-bottom: 2px; }
+    .msg .role { font-size: 12px; color: #6154c0; margin-bottom: 4px; }
+
+    .delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    font-size: 12px;
+    color: #fff;
+    background: #ef4444; /* nice red */
+    padding: 2px 8px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+    background: #dc2626; /* darker red on hover */
+    transform: scale(1.1);
+}
+
+    .input-box { display: flex; gap: 8px; margin-top: auto; }
+    .input-box textarea {
+      flex: 1;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      padding: 8px;
+      resize: none;
+      height: 50px;
+      font-size: 14px;
+    }
+    .input-box button {
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 0 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .chat-box::-webkit-scrollbar { width: 6px; }
+    .chat-box::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.5); border-radius: 3px; }
+
+    @media (max-width: 600px) {
+      .chat-container { margin: 0; height: 100vh; padding: 8px;  }
+      .msg { font-size: 14px; padding: 8px 10px; max-width: 90%; }
+      .input-box textarea { height: 45px; font-size: 14px; }
+      .input-box button { padding: 0 12px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <h2>{{ group.name }}</h2>
+
+  <div class="chat-box">
+      {% for m in messages %}
+          <div class="msg {% if m.user == request.user %}me{% endif %}">
+              <strong>{{ m.user.fullname }}</strong>
+              <span class="role">Role: {{ m.user.role|default:"N/A" }}</span><br>
+              {{ m.message }}
+              {% if request.user.is_superuser %}
+                  <a href="{% url 'delete_message' m.id %}" class="delete-btn">Delete</a>
+              {% endif %}
+          </div>
+      {% empty %}
+      <div style="text-align:center; color:#999;">No messages yet.</div>
+      {% endfor %}
+  </div>
+
+  {% if request.user.is_staff and not request.user.is_superuser %}
+  <form method="post" class="input-box">
+      {% csrf_token %}
+      <textarea name="message" placeholder="Type a message..." required></textarea>
+      <button type="submit">Send</button>
+  </form>
+  {% endif %}
+
+  {% if request.user.is_superuser == False and request.user.is_staff == False %}
+  <!-- Patient input -->
+  <form method="post" class="input-box">
+      {% csrf_token %}
+      <textarea name="message" placeholder="Type a message..." required></textarea>
+      <button type="submit">Send</button>
+  </form>
+  {% endif %}
+
+  <div style="margin-top:10px;text-align:center;">
+      <a href="{% url 'group_list' %}" style="color:#3b82f6; text-decoration:none;">← Back to Groups</a>
+  </div>
+</div>
+
+</body>
+</html>

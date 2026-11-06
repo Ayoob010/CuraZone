@@ -1,0 +1,44 @@
+{% extends 'base_mobile.html' %}
+
+{% block content %}
+<div class="section">
+  <div class="card">
+    <div
+      style="display:flex; align-items:center; gap:10px; padding-bottom:15px; border-bottom:1px solid #f1f5f9; margin-bottom:15px;">
+      <div style="font-size:24px;">🤖</div>
+      <div>
+        <h3 style="margin:0; font-size:16px;">AI Health Assistant</h3>
+        <div style="font-size:13px; color:#64748b;">Chat about {{ condition }}</div>
+      </div>
+    </div>
+
+    <div
+      style="height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; margin-bottom:15px; padding-right:5px;">
+      {% for msg in chat_messages %}
+      <div style="max-width:80%; padding:10px; border-radius:12px; font-size:14px; 
+                {% if msg.sender == request.user %}
+                    align-self:flex-end; background:#3b82f6; color:#fff; border-bottom-right-radius:2px;
+                {% else %}
+                    align-self:flex-start; background:#f1f5f9; color:#333; border-bottom-left-radius:2px;
+                {% endif %}">
+        {{ msg.message }}
+      </div>
+      {% empty %}
+      <div style="text-align:center; color:#94a3b8; font-size:13px; margin-top:20px;">
+        Start a conversation about your {{ condition }} management.
+      </div>
+      {% endfor %}
+    </div>
+
+    <form method="post" style="display:flex; gap:10px;">
+      {% csrf_token %}
+      <input type="text" name="message" placeholder="Type your message..." required
+        style="flex:1; padding:10px 14px; border-radius:20px; border:1px solid #cbd5e1; outline:none;">
+      <button type="submit"
+        style="width:40px; height:40px; background:#3b82f6; color:#fff; border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        ➤
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

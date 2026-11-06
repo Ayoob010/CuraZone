@@ -1,0 +1,292 @@
+{% extends 'base_mobile.html' %}
+
+{% block extra_css %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+    /* Remove default section padding/margin for this page */
+    .nearby-page {
+        display: flex;
+        flex-direction: column;
+        /* fill from top of content area to just above bottom nav */
+        height: calc(100vh - 80px);
+        overflow: hidden;
+    }
+
+    /* ── Page Header ── */
+    .nearby-header {
+        background: linear-gradient(135deg, #d4b6b6ff, #cc9696ff);
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+        flex-shrink: 0;
+    }
+    .nearby-header-left { display: flex; align-items: center; gap: 10px; }
+    .nearby-header-title { color: #fff; font-weight: 700; font-size: 15px; line-height: 1.2; }
+    .nearby-header-sub  { color: rgba(255,255,255,0.8); font-size: 11px; }
+    .nearby-back-btn {
+        background: rgba(255,255,255,0.2);
+        border: none; color: #fff;
+        border-radius: 50%;
+        width: 36px; height: 36px;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        text-decoration: none;
+        line-height: 1;
+    }
+    .nearby-back-btn:hover { background: rgba(255,255,255,0.35); }
+
+    /* ── Search Panel ── */
+    .nearby-search {
+        background: #fff;
+        padding: 12px 1px 8px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+        flex-shrink: 0;
+    }
+    .nearby-search-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    #placeSearch {
+        flex: 1;
+        padding: 9px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 13px;
+        outline: none;
+        transition: border-color .2s;
+    }
+    #placeSearch:focus { border-color: #3b82f6; }
+
+    #searchBtn {
+        background: #3b82f6;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    #searchBtn:hover { background: #2563eb; }
+
+    #locBtn {
+        width: 100%;
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1.5px solid #86efac;
+        border-radius: 10px;
+        padding: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    #locBtn:hover { background: #dcfce7; }
+
+    .nearby-legend {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+    .nearby-legend span { font-size: 11px; color: #555; }
+
+    /* Status */
+    #mapStatus {
+        text-align: center;
+        font-size: 12px;
+        color: #64748b;
+        padding: 4px 14px;
+        background: #fff;
+        border-top: 1px solid #f1f5f9;
+        min-height: 24px;
+        flex-shrink: 0;
+    }
+
+    /* Map fills remaining space */
+    #nearbyMap {
+        flex: 1;
+        width: 100%;
+        min-height: 0; /* important for flex child */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="nearby-page">
+
+    <!-- Header -->
+    <div class="nearby-header">
+        <div class="nearby-header-left">
+            <span style="font-size:20px;">📍</span>
+            <div>
+                <div class="nearby-header-title">Nearby Healthcare</div>
+                <div class="nearby-header-sub">Pharmacies · Clinics · Hospitals · 10 km</div>
+            </div>
+        </div>
+        <a href="{% url 'home' %}" class="nearby-back-btn" title="Back">←</a>
+    </div>
+
+    <!-- Search -->
+    <div class="nearby-search">
+        <div class="nearby-search-row">
+            <input id="placeSearch" type="text" placeholder="Search a city or area…"
+                onkeydown="if(event.key==='Enter') searchPlace()">
+            <button id="searchBtn" onclick="searchPlace()">🔍 Search</button>
+        </div>
+        {% comment %} <button id="locBtn" onclick="useMyLocation()">📡 Use My Location</button> {% endcomment %}
+        <div class="nearby-legend">
+            <span>🔴 Pharmacy</span>
+            <span>🔵 Clinic</span>
+            <span>🟢 Hospital</span>
+        </div>
+    </div>
+
+    <!-- Status -->
+    <div id="mapStatus">Search a place or use your location.</div>
+
+    <!-- Map -->
+    <div id="nearbyMap"></div>
+
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const RADIUS_M = 10000;
+
+const map = L.map('nearbyMap').setView([10.8505, 76.2711], 8);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+    maxZoom: 19,
+}).addTo(map);
+
+// Fix map size after base template renders
+setTimeout(() => map.invalidateSize(), 300);
+
+let markers = [];
+let radiusCircle = null;
+
+const typeConfig = {
+    pharmacy: { color: '#ef4444', label: 'Pharmacy' },
+    clinic:   { color: '#3b82f6', label: 'Clinic'   },
+    hospital: { color: '#10b981', label: 'Hospital'  },
+};
+
+function makeIcon(type) {
+    const cfg = typeConfig[type] || { color: '#6b7280' };
+    return L.divIcon({
+        className: '',
+        html: `<div style="background:${cfg.color};width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>`,
+        iconSize: [26, 26], iconAnchor: [13, 26], popupAnchor: [0, -28],
+    });
+}
+
+function setStatus(msg) { document.getElementById('mapStatus').textContent = msg; }
+
+function clearMap() {
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+    if (radiusCircle) { map.removeLayer(radiusCircle); radiusCircle = null; }
+}
+
+async function queryOverpass(lat, lon) {
+    setStatus('🔍 Searching nearby places…');
+    clearMap();
+
+    radiusCircle = L.circle([lat, lon], {
+        radius: RADIUS_M, color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.07, weight: 2,
+    }).addTo(map);
+
+    const pin = L.marker([lat, lon], {
+        icon: L.divIcon({
+            className: '',
+            html: `<div style="background:#1d4ed8;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>`,
+            iconSize: [16, 16], iconAnchor: [8, 8],
+        })
+    }).addTo(map).bindPopup('📍 Search Location');
+    markers.push(pin);
+
+    const q = `[out:json][timeout:25];(
+        node[amenity=pharmacy](around:${RADIUS_M},${lat},${lon});
+        way[amenity=pharmacy](around:${RADIUS_M},${lat},${lon});
+        node[amenity=clinic](around:${RADIUS_M},${lat},${lon});
+        way[amenity=clinic](around:${RADIUS_M},${lat},${lon});
+        node[amenity=hospital](around:${RADIUS_M},${lat},${lon});
+        way[amenity=hospital](around:${RADIUS_M},${lat},${lon});
+    );out center;`;
+
+    try {
+        const res = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
+        const data = await res.json();
+        const counts = { pharmacy: 0, clinic: 0, hospital: 0 };
+
+        (data.elements || []).forEach(el => {
+            const tags = el.tags || {};
+            const type = tags.amenity;
+            if (!typeConfig[type]) return;
+            const elLat = el.lat || (el.center && el.center.lat);
+            const elLon = el.lon  || (el.center && el.center.lon);
+            if (!elLat || !elLon) return;
+
+            const name  = tags.name || typeConfig[type].label;
+            const phone = tags.phone || tags['contact:phone'] || '';
+            const hours = tags.opening_hours || '';
+            const addr  = tags['addr:full'] || tags['addr:street'] || '';
+
+            const popup = `<div style="min-width:160px;font-family:sans-serif;">
+                <strong style="font-size:13px;">${name}</strong><br>
+                <span style="font-size:11px;color:#64748b;text-transform:capitalize;">${type}</span>
+                ${addr  ? `<br><span style="font-size:11px;">📌 ${addr}</span>` : ''}
+                ${phone ? `<br>📞 <a href="tel:${phone}" style="color:#3b82f6;font-size:11px;">${phone}</a>` : ''}
+                ${hours ? `<br><span style="font-size:11px;">🕐 ${hours}</span>` : ''}
+                </div>`;
+
+            const m = L.marker([elLat, elLon], { icon: makeIcon(type) }).addTo(map).bindPopup(popup);
+            markers.push(m);
+            counts[type]++;
+        });
+
+        const total = counts.pharmacy + counts.clinic + counts.hospital;
+        setStatus(total === 0
+            ? 'No results found within 10 km.'
+            : `Found: 🔴 ${counts.pharmacy} pharmacy · 🔵 ${counts.clinic} clinic · 🟢 ${counts.hospital} hospital`);
+        map.setView([lat, lon], 13);
+    } catch (e) {
+        setStatus('⚠️ Could not fetch nearby places. Check connection.');
+    }
+}
+
+async function searchPlace() {
+    const query = document.getElementById('placeSearch').value.trim();
+    if (!query) { setStatus('⚠️ Please enter a place name.'); return; }
+    setStatus('🌐 Looking up location…');
+    try {
+        const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+            { headers: { 'Accept-Language': 'en' } }
+        );
+        const results = await res.json();
+        if (!results.length) { setStatus('⚠️ Place not found. Try a different name.'); return; }
+        await queryOverpass(parseFloat(results[0].lat), parseFloat(results[0].lon));
+    } catch (e) {
+        setStatus('⚠️ Search failed. Check connection.');
+    }
+}
+
+function useMyLocation() {
+    if (!navigator.geolocation) { setStatus('⚠️ Geolocation not supported.'); return; }
+    setStatus('📡 Getting your location…');
+    navigator.geolocation.getCurrentPosition(
+        pos => queryOverpass(pos.coords.latitude, pos.coords.longitude),
+        ()  => setStatus('⚠️ Location access denied or unavailable.')
+    );
+}
+</script>
+{% endblock %}

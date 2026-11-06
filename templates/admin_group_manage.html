@@ -1,0 +1,49 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 0 auto; margin-bottom: 30px;">
+  <h3>Create New Group</h3>
+  <form method="post">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Group name" required
+      style="display:block; width:100%; margin-bottom:15px; padding:10px; border-radius:6px; border:1px solid #cbd5e1;">
+    <textarea name="description" placeholder="Group description (optional)"
+      style="display:block; width:100%; margin-bottom:15px; padding:10px; border-radius:6px; border:1px solid #cbd5e1; height:80px; resize:none;"></textarea>
+    <button type="submit" class="btn btn-primary" style="padding:10px 20px;">Create Group</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Community Groups List</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Group Name</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for group in groups %}
+      <tr>
+        <td><strong>{{ group.name }}</strong></td>
+        <td>
+          <div style="display:flex; gap:10px;">
+            <a href="{% url 'group_chat' group.id %}" class="btn btn-primary"
+              style="padding:6px 12px; font-size:12px; color:#fff; text-decoration:none;">Open Chat</a>
+            <a href="/admin/myapp/communitygroup/{{ group.id }}/delete/" class="btn btn-danger"
+              style="padding:6px 12px; font-size:12px; color:#fff; text-decoration:none;"
+              onclick="return confirm('Are you sure you want to delete this group?');">
+              Delete
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="2" style="text-align:center; padding:20px; color:#64748b;">No groups created yet</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

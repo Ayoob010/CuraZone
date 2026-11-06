@@ -1,0 +1,53 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div style="text-align:center; padding: 40px 20px;">
+    <h1 style="font-size:32px; color:#1e293b; margin-bottom:10px;">Admin Dashboard</h1>
+    <p style="color:#64748b; font-size:16px;">Manage your hospital operations efficiently</p>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:25px; padding:20px;">
+
+    <a href="{% url 'stock_report' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">📊</div>
+        <h3 style="margin:0; color:#2563eb;">Stock Report</h3>
+        <p style="color:#64748b; margin-top:5px;">Manage medicines & inventory</p>
+    </a>
+
+    <a href="{% url 'doctor_details' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">🧑‍⚕️</div>
+        <h3 style="margin:0; color:#16a34a;">Doctors List</h3>
+        <p style="color:#64748b; margin-top:5px;">Manage doctors & approvals</p>
+    </a>
+
+    <a href="{% url 'patient_details' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">🧑‍🤝‍🧑</div>
+        <h3 style="margin:0; color:#8b5cf6;">Patients</h3>
+        <p style="color:#64748b; margin-top:5px;">View patient records</p>
+    </a>
+
+    <a href="{% url 'admin_group_manage' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">👥</div>
+        <h3 style="margin:0; color:#f97316;">Manage Groups</h3>
+        <p style="color:#64748b; margin-top:5px;">Community discussions</p>
+    </a>
+
+    <a href="{% url 'admin_orders' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">🛍️</div>
+        <h3 style="margin:0; color:#6366f1;">Orders</h3>
+        <p style="color:#64748b; margin-top:5px;">Track patient orders</p>
+    </a>
+
+    <a href="{% url 'admin_smart_buckets' %}" class="card"
+        style="text-decoration:none; color:inherit; text-align:center; transition:transform 0.2s; display:block;">
+        <div style="font-size:40px; margin-bottom:15px;">🎒</div>
+        <h3 style="margin:0; color:#db2777;">Smart Buckets</h3>
+        <p style="color:#64748b; margin-top:5px;">Create product kits/bundles</p>
+    </a>
+</div>
+{% endblock %}

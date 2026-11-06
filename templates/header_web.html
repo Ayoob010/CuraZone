@@ -1,0 +1,129 @@
+{% load static %}
+<style>
+    .web-header {
+        background: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .nav-brand {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2563eb;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .nav-link {
+        text-decoration: none;
+        color: #334155;
+        font-weight: 500;
+        font-size: 15px;
+        transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+        color: #2563eb;
+    }
+
+    .nav-link.active {
+        color: #2563eb;
+        font-weight: 600;
+    }
+
+    .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .user-avatar {
+        width: 46px;
+        height: 44px;
+        background: #2563eb;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .btn-logout {
+        padding: 8px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        color: #ef4444;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+        background: #fef2f2;
+        border-color: #fecaca;
+    }
+</style>
+
+<header class="web-header">
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="nav-brand">
+                    <img src="{% static 'logo2.png' %}" style="width: 140px; height: 110px;" alt="Avatar" class="avatar">
+
+        </a>
+
+        <div class="nav-links">
+            {% if request.user.role == 'doctor' %}
+            <a href="{% url 'doctor_appointments' %}" class="nav-link">Appointments</a>
+            <a href="{% url 'doctor_create_prescription' %}" class="nav-link">Create Rx</a>
+            <a href="{% url 'doctor_prescriptions' %}" class="nav-link">History</a>
+            <a href="{% url 'group_list' %}" class="nav-link">Community</a>
+            {% elif request.user.role == 'admin' or request.user.is_superuser %}
+            <a href="{% url 'stock_report' %}" class="nav-link">Stock</a>
+            <a href="{% url 'admin_smart_buckets' %}" class="nav-link">Smart Kits</a>
+            <a href="{% url 'doctor_details' %}" class="nav-link">Doctors</a>
+            <a href="{% url 'patient_details' %}" class="nav-link">Patients</a>
+            <a href="{% url 'admin_group_manage' %}" class="nav-link">Groups</a>
+            <a href="{% url 'admin_orders' %}" class="nav-link">Orders</a>
+            {% endif %}
+        </div>
+
+        <div class="user-menu">
+            {% if request.user.is_authenticated %}
+            <div class="user-avatar">
+                
+                {% if request.user.is_superuser %}
+                Admin
+                {% else %}
+                                {{ request.user.fullname }}
+
+                {% endif %}
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="nav-link">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>

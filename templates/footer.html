@@ -1,0 +1,118 @@
+<!-- ===== FOOTER START ===== -->
+<style>
+  /* FOOTER WRAPPER */
+  .app-footer {
+    padding: 30px 16px 24px;
+    background: #f2f6fb;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 14px 0;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
+
+    /* Sticky/Fixed Positioning */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    z-index: 1000;
+  }
+
+  /* NAV ITEMS */
+  .bottom-nav a {
+    text-decoration: none;
+    color: #6b7280;
+    font-size: 11px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+
+    min-width: 60px;
+    position: relative;
+  }
+
+  /* ICON */
+  .bottom-nav .icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  /* ACTIVE STATE */
+  .bottom-nav a.active {
+    color: #2563eb;
+    font-weight: 600;
+  }
+
+  /* ACTIVE ICON BACKGROUND */
+  .bottom-nav a.active::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+
+    width: 48px;
+    height: 48px;
+    background: rgba(37, 99, 235, 0.12);
+    border-radius: 50%;
+    z-index: -1;
+  }
+
+  /* DESKTOP VIEW */
+  @media (min-width: 768px) {
+    .app-footer {
+      max-width: 1200px;
+      margin: auto;
+    }
+  }
+</style>
+
+<footer class="app-footer">
+  <nav class="bottom-nav">
+
+    <!-- HOME -->
+    <a href="{% url 'home' %}" class="">
+      <span class="icon">🏠</span>
+      <span>Home</span>
+    </a>
+
+    <!-- SEARCH -->
+    <a href="{% url 'browse' %}">
+      <span class="icon">🔍</span>
+      <span>Search</span>
+    </a>
+
+    <!-- CHAT / SUPPORT -->
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'cart' %}">
+      <span class="icon">🛒</span>
+      <span>Cart</span>
+    </a>
+    {% endif %}
+
+    <!-- PROFILE / LOGIN -->
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'profile' %}">
+      <span class="icon">👤</span>
+      <span>Profile</span>
+    </a>
+    {% else %}
+    <a href="{% url 'login' %}">
+      <span class="icon">👤</span>
+      <span>Login</span>
+    </a>
+    {% endif %}
+
+  </nav>
+</footer>
+<!-- ===== FOOTER END ===== -->

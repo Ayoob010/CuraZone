@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Health App – Home</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f2f6fb;
+}
+
+.app-container {
+  max-width: 420px;
+  margin: auto;
+  min-height: 100vh;
+  background: #f2f6fb;
+}
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  padding: 25px;
+  color: #fff;
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+}
+
+/* SEARCH */
+.search-box {
+  margin: -20px 20px 20px;
+  background: #fff;
+  padding: 14px 16px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+/* ACTION CARDS */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 0 20px;
+}
+
+.action-card {
+  background: #fff;
+  padding: 18px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  text-decoration: none;
+  color: #111;
+}
+
+.action-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+}
+
+.blue { background: #3b82f6; }
+.green { background: #10b981; }
+.purple { background: #8b5cf6; }
+.orange { background: #f97316; }
+.red { background: #ef4444; }
+
+.action-text strong {
+  display: block;
+  font-size: 15px;
+}
+
+.action-text span {
+  font-size: 13px;
+  color: #666;
+}
+/* ================== BROWSE CARD ================== */
+.browse-card {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: 18px;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  margin: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.browse-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.browse-icon {
+  width: 46px;
+  height: 46px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.browse-text .h {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.browse-text .sub {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.browse-card > div:last-child {
+  font-size: 24px;
+}
+
+/* ================== OFFERS ================== */
+.offers {
+  padding: 0 20px;
+  margin-top: 30px;
+}
+
+.offers-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.offers-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.view-all {
+  font-size: 14px;
+  text-decoration: none;
+  color: #2563eb;
+}
+
+.carousel {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.promo {
+  min-width: 180px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+}
+
+.promo-tag {
+  display: inline-block;
+  background: #10b981;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.promo-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ================== HEALTH SECTION ================== */
+.health-section {
+  padding: 0 20px;
+  margin-top: 30px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+
+.health-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+}
+
+.health-card.highlight {
+  border-left: 5px solid #3b82f6;
+}
+
+.health-card .left {
+  flex-shrink: 0;
+}
+
+.pill-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.pill-icon.calendar {
+  background: #10b981;
+}
+
+.health-card .center {
+  flex: 1;
+}
+
+.health-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.health-sub {
+  font-size: 13px;
+  color: #666;
+  margin-top: 3px;
+}
+
+/* ================== BUTTON ================== */
+.btn.small {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn.blue {
+  background: #3b82f6;
+  color: #fff;
+}
+.health-card.tip{
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+
+  background: linear-gradient(135deg,#eff6ff,#e0f2fe);
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+
+  border-left: 6px solid #3b82f6;
+}
+
+.icon-wrap{
+  min-width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+}
+
+.text-wrap{
+  display: flex;
+  flex-direction: column;
+}
+
+.health-title{
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.health-sub{
+  font-size: 13px;
+  color: #475569;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h2>
+      {% if request.user.is_authenticated %}
+        Welcome, {{ request.user.fullname }}
+      {% else %}
+        Welcome 👋
+      {% endif %}
+    </h2>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-box">
+    🔍
+    <input type="text" placeholder="Search medicines, doctors & more">
+  </div>
+
+  <!-- ACTION CARDS WITH CONDITIONS -->
+  <div class="quick-actions">
+
+{% if request.user.is_authenticated %}
+
+  <!-- ================= ADMIN ================= -->
+  {% if request.user.is_superuser %}
+
+    <a href="{% url 'stock_report' %}" class="action-card">
+      <div class="action-icon blue">📊</div>
+      <div class="action-text">
+        <strong>Stock</strong>
+        <span>Report</span>
+      </div>
+    </a>
+
+    <a href="{% url 'doctor_details' %}" class="action-card">
+      <div class="action-icon green">🧑‍⚕️</div>
+      <div class="action-text">
+        <strong>Doctors</strong>
+        <span>List</span>
+      </div>
+    </a>
+
+    <a href="{% url 'patient_details' %}" class="action-card">
+      <div class="action-icon purple">🧑‍🤝‍🧑</div>
+      <div class="action-text">
+        <strong>Patients</strong>
+        <span>Details</span>
+      </div>
+    </a>
+
+    <a href="{% url 'admin_group_manage' %}" class="action-card">
+    <div class="action-icon orange">👥</div>
+    <div class="action-text">
+        <strong>Manage Community</strong>
+        <span>Groups</span>
+    </div>
+</a>
+<a href="{% url 'group_list' %}" class="action-card">
+      <div class="action-icon purple">👥</div>
+      <div class="action-text">
+        <strong>Community</strong>
+        <span>Groups</span>
+      </div>
+    </a>
+
+  <!-- ================= DOCTOR ================= -->
+  {% elif request.user.role == "doctor" %}
+
+    <a href="{% url 'doctor_appointments' %}" class="action-card">
+      <div class="action-icon green">📅</div>
+      <div class="action-text">
+        <strong>Appointments</strong>
+        <span>View</span>
+      </div>
+    </a>
+
+    <a href="{% url 'doctor_create_prescription' %}" class="action-card">
+      <div class="action-icon green">📝</div>
+      <div class="action-text">
+        <strong>Create</strong>
+        <span>Prescription</span>
+      </div>
+    </a>
+
+    <a href="{% url 'doctor_prescriptions' %}" class="action-card">
+      <div class="action-icon blue">📄</div>
+      <div class="action-text">
+        <strong>My</strong>
+        <span>Prescriptions</span>
+      </div>
+    </a>
+
+    <a href="{% url 'profile' %}" class="action-card">
+      <div class="action-icon purple">👤</div>
+      <div class="action-text">
+        <strong>Profile</strong>
+        <span>Manage</span>
+      </div>
+    </a>
+    <a href="{% url 'group_list' %}" class="action-card">
+      <div class="action-icon purple">👥</div>
+      <div class="action-text">
+        <strong>Community</strong>
+        <span>Groups</span>
+      </div>
+    </a>
+
+  <!-- ================= PATIENT ================= -->
+  {% elif request.user.role == "patient" %}
+
+    <a href="{% url 'upload_prescription' %}" class="action-card">
+      <div class="action-icon blue">⬆️</div>
+      <div class="action-text">
+        <strong>Upload</strong>
+        <span>Prescription</span>
+      </div>
+    </a>
+
+    <a href="{% url 'patient_prescriptions' %}" class="action-card">
+      <div class="action-icon blue">📄</div>
+      <div class="action-text">
+        <strong>My</strong>
+        <span>Prescriptions</span>
+      </div>
+    </a>
+
+    <a href="{% url 'condition_chat' %}" class="action-card">
+      <div class="action-icon blue">💬</div>
+      <div class="action-text">
+        <strong>Condition</strong>
+        <span>Chat</span>
+      </div>
+    </a>
+
+    <a href="{% url 'health_tips' %}" class="action-card">
+      <div class="action-icon green">💛</div>
+      <div class="action-text">
+        <strong>Health</strong>
+        <span>Tips</span>
+      </div>
+    </a>
+    <a href="{% url 'group_list' %}" class="action-card">
+      <div class="action-icon purple">👥</div>
+      <div class="action-text">
+        <strong>Community</strong>
+        <span>Groups</span>
+      </div>
+    </a>
+
+    <a href="{% url 'doctor_list' %}" class="action-card">
+      <div class="action-icon green">🧑‍⚕️</div>
+      <div class="action-text">
+        <strong>Consult</strong>
+        <span>Doctor</span>
+      </div>
+    </a>
+
+    
+
+  {% endif %}
+
+  <!-- LOGOUT FOR ALL AUTH USERS -->
+  <a href="{% url 'logout' %}" class="action-card">
+    <div class="action-icon red">🚪</div>
+    <div class="action-text">
+      <strong>Logout</strong>
+      <span>Exit</span>
+    </div>
+  </a>
+
+{% else %}
+
+  <!-- GUEST -->
+  <a href="{% url 'login' %}" class="action-card">
+    <div class="action-icon blue">🔐</div>
+    <div class="action-text">
+      <strong>Login</strong>
+      <span>Access</span>
+    </div>
+  </a>
+
+  <a href="{% url 'register' %}" class="action-card">
+    <div class="action-icon green">📝</div>
+    <div class="action-text">
+      <strong>Register</strong>
+      <span>New User</span>
+    </div>
+  </a>
+
+{% endif %}
+
+</div>
+
+  <a href="{% url 'browse' %}" style="text-decoration:none;">
+  <div class="browse-card">
+    <div class="browse-left">
+      <div class="browse-icon">🛒</div>
+      <div class="browse-text">
+        <div class="h">Browse Products</div>
+        <div class="sub">Medicines, Devices & Supplements</div>
+      </div>
+    </div>
+    <div>→</div>
+  </div>
+</a>
+
+      <!-- OFFERS -->
+      <section class="offers">
+        <div class="offers-head">
+          <h3>Special Offers</h3>
+          <a class="view-all" href="#">View all</a>
+        </div>
+
+        <div class="carousel">
+          <div class="promo">
+            <span class="promo-tag">SAVE 25%</span>
+            <div class="promo-title">On Vitamins</div>
+          </div>
+
+          <div class="promo">
+            <span class="promo-tag">FREE</span>
+            <div class="promo-title">Sample Included</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HEALTH -->
+      <section class="health-section">
+        <h4 class="section-title">Your Health</h4>
+
+        <div class="health-card highlight">
+          <div class="left">
+            <div class="pill-icon">💊</div>
+          </div>
+
+          <div class="center">
+            <div class="health-title">Vitamin D3</div>
+            <div class="health-sub">Running low – 3 days left</div>
+          </div>
+
+          <button class="btn small blue">Reorder</button>
+        </div>
+
+        <div class="health-card">
+          <div class="left">
+            <div class="pill-icon calendar">📅</div>
+          </div>
+
+          <div class="center">
+            <div class="health-title">Consultation</div>
+            <div class="health-sub">Dr. Boby Varkey – Tomorrow 10:00 AM</div>
+          </div>
+        </div>
+        <div class="health-card tip">
+  <div class="icon-wrap">
+    💧
+  </div>
+
+  <div class="text-wrap">
+    <div class="health-title">Stay Hydrated</div>
+    <div class="health-sub">
+      Drink at least 8 glasses of water daily for optimal health and well-being.
+    </div>
+  </div>
+</div>
+
+      </section>
+      
+
+    </main>
+{% include 'footer.html' %}
+</div>
+
+</body>
+</html>

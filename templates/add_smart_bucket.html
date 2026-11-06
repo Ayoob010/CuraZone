@@ -1,0 +1,107 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 20px auto; padding: 20px;">
+    <div style="margin-bottom:30px;">
+        <a href="{% url 'admin_smart_buckets' %}" style="text-decoration:none; color:#64748b; font-size:14px;">← Back to Buckets</a>
+        <h1 style="margin:10px 0 0; color:#1e293b;">Create Smart Bucket</h1>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="card" style="padding:30px;">
+        {% csrf_token %}
+        
+        <div style="margin-bottom:20px;">
+            <label style="display:block; margin-bottom:8px; font-weight:600; color:#475569;">Bucket Name</label>
+            <input type="text" name="name" required placeholder="e.g. Covid Safety Kit"
+                style="width:100%; padding:12px; border:1px solid #e2e8f0; border-radius:10px; outline:none;">
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <label style="display:block; margin-bottom:8px; font-weight:600; color:#475569;">Description</label>
+            <textarea name="description" rows="3" placeholder="Explain what this kit is for..."
+                style="width:100%; padding:12px; border:1px solid #e2e8f0; border-radius:10px; outline:none; font-family:inherit;"></textarea>
+        </div>
+
+        <div style="margin-bottom:30px;">
+            <label style="display:block; margin-bottom:8px; font-weight:600; color:#475569;">Display Image</label>
+            <input type="file" name="image" accept="image/*"
+                style="width:100%; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:10px;">
+        </div>
+
+        <hr style="border:0; border-top:1px solid #f1f5f9; margin-bottom:30px;">
+
+        <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; color:#1e293b;">Includes Products</h3>
+            <button type="button" id="addItem" 
+                style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd; padding:8px 16px; border-radius:8px; cursor:pointer; font-weight:600; font-size:14px;">
+                + Add Item
+            </button>
+        </div>
+
+        <div id="itemList">
+            <!-- Row Template -->
+            <div class="item-row" style="display:grid; grid-template-columns: 1fr 100px 50px; gap:15px; margin-bottom:15px; align-items:end;">
+                <div>
+                    <label style="display:block; margin-bottom:5px; font-size:13px; color:#64748b;">Product</label>
+                    <select name="product_id" required style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:8px; background:#fff;">
+                        <option value="">Select Product...</option>
+                        {% for product in products %}
+                        <option value="{{ product.id }}">{{ product.name }} (₹{{ product.price }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; margin-bottom:5px; font-size:13px; color:#64748b;">Quantity</label>
+                    <input type="number" name="quantity" value="1" min="1" required
+                        style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:8px; outline:none;">
+                </div>
+                <button type="button" class="remove-btn" style="background:#fff; color:#ef4444; border:1px solid #fee2e2; width:40px; height:40px; border-radius:8px; cursor:pointer; font-size:18px;">
+                    ×
+                </button>
+            </div>
+        </div>
+
+        <div style="margin-top:40px;">
+            <button type="submit" class="btn btn-primary" style="width:100%; padding:15px; font-size:16px; font-weight:700;">
+                Create Smart Bucket
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('addItem').addEventListener('click', function() {
+        const itemLayout = `
+            <div class="item-row" style="display:grid; grid-template-columns: 1fr 100px 50px; gap:15px; margin-bottom:15px; align-items:end;">
+                <div>
+                    <select name="product_id" required style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:8px; background:#fff;">
+                        <option value="">Select Product...</option>
+                        {% for product in products %}
+                        <option value="{{ product.id }}">{{ product.name }} (₹{{ product.price }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <input type="number" name="quantity" value="1" min="1" required
+                        style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:8px; outline:none;">
+                </div>
+                <button type="button" class="remove-btn" style="background:#fff; color:#ef4444; border:1px solid #fee2e2; width:40px; height:40px; border-radius:8px; cursor:pointer; font-size:18px;">
+                    ×
+                </button>
+            </div>
+        `;
+        document.getElementById('itemList').insertAdjacentHTML('beforeend', itemLayout);
+    });
+
+    document.getElementById('itemList').addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-btn')) {
+            const rows = document.querySelectorAll('.item-row');
+            if (rows.length > 1) {
+                e.target.closest('.item-row').remove();
+            } else {
+                alert("Bucket must have at least one item.");
+            }
+        }
+    });
+</script>
+{% endblock %}

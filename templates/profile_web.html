@@ -1,0 +1,55 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div
+        style="display:flex; align-items:center; gap:20px; border-bottom:1px solid #f1f5f9; padding-bottom:20px; margin-bottom:20px;">
+        {% if request.user.profile %}
+            <img 
+                src="{{ request.user.profile.url }}" 
+                alt="Profile Photo"
+                style="width:80px; height:80px; border-radius:50%; object-fit:cover;"
+            >
+        {% else %}
+            <div
+                style="width:80px; height:80px; background:#3b82f6; border-radius:50%;
+                    display:flex; align-items:center; justify-content:center;
+                    color:#fff; font-size:32px; font-weight:bold;">
+                {{ request.user.fullname|slice:":1"|upper }}
+            </div>
+        {% endif %}
+
+        <div>
+            <h2 style="margin:0;">{{ request.user.fullname }}</h2>
+            <div style="color:#64748b; margin-top:4px;">{{ request.user.email }}</div>
+            <div style="margin-top:8px;">
+                <span
+                    style="background:#eff6ff; color:#3b82f6; padding:4px 12px; border-radius:12px; font-size:13px; font-weight:600; text-transform:uppercase;">
+                    {{ request.user.role }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:20px;">
+        <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="margin:0;">Personal Info</h3>
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary"
+                    style="padding:4px 12px; font-size:12px;">Edit</a>
+            </div>
+            <div style="margin-bottom:10px;"><strong>Phone:</strong> {{ request.user.phone|default:"-" }}</div>
+            <div style="margin-bottom:10px;"><strong>Experience:</strong> {{ request.user.experience|default:"-" }}</div>
+            <div style="margin-bottom:10px;"><strong>Specialization:</strong>
+                {{ request.user.specialization|default:"-" }}</div>
+        </div>
+        <div>
+            <!-- Additional stats or info -->
+        </div>
+    </div>
+
+    <div style="margin-top:30px; border-top:1px solid #f1f5f9; padding-top:20px;">
+        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+    </div>
+</div>
+{% endblock %}

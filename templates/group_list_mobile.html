@@ -1,0 +1,31 @@
+{% extends 'base_mobile.html' %}
+
+{% block content %}
+<div class="section">
+    <h2 style="margin-top:0;">Community Groups</h2>
+
+    {% for group in groups %}
+    <div class="card">
+        <h3 style="margin-top:0;">{{ group.name }}</h3>
+        <p style="color:#64748b; font-size:14px; margin-bottom:15px;">{{ group.description|default:"No description" }}
+        </p>
+
+        {% if group.id in joined_group_ids %}
+        <div style="display:flex; gap:10px;">
+            <a href="{% url 'group_chat' group.id %}" class="btn btn-primary" style="flex:1;">Chat</a>
+            <a href="{% url 'leave_group' group.id %}" class="btn"
+                style="background:#fee2e2; color:#ef4444; border:none; padding:10px 20px; border-radius:12px;">Leave</a>
+        </div>
+        {% else %}
+        <a href="{% url 'join_group' group.id %}" class="btn btn-primary"
+            style="display:block; text-align:center; background:#10b981;">Join Group</a>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div style="text-align:center; padding:40px 0; color:#94a3b8;">
+        <div style="font-size:40px; margin-bottom:10px;">👥</div>
+        <div>No groups found</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

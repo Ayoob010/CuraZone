@@ -1,0 +1,30 @@
+{% extends 'base_mobile.html' %}
+
+{% block content %}
+<div class="section">
+  <h2 style="margin-top:0;">Medicine Reminders</h2>
+
+  {% if reminder_message %}
+  <div class="card" style="border-left:5px solid #ef4444; background:#fef2f2;">
+    <h3 style="margin-top:0; color:#b91c1c;">⚠️ Refill Alert</h3>
+    <p>{{ reminder_message }}</p>
+    <a href="{% url 'browse' %}" class="btn btn-primary"
+      style="display:inline-block; font-size:13px; margin-top:10px;">Order Now</a>
+  </div>
+  {% endif %}
+
+  {% if last_prescription %}
+  <div class="card">
+    <h3 style="margin-top:0;">Last Prescription</h3>
+    <div style="font-size:14px; color:#334155; margin-bottom:6px;">Date: {{ last_prescription.date }}</div>
+    <div style="background:#f1f5f9; padding:10px; border-radius:8px; font-size:14px; color:#475569;">
+      {{ last_prescription.notes|default:"No notes" }}
+    </div>
+  </div>
+  {% else %}
+  <div class="card" style="text-align:center; padding:30px; color:#94a3b8;">
+    No prescription history used for tracking.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

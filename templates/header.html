@@ -1,0 +1,74 @@
+{% load static %}
+<style>
+  .app-header {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    padding: 20px;
+    padding-bottom: 25px;
+    border-bottom-left-radius: 26px;
+    border-bottom-right-radius: 26px;
+    color: #fff;
+  }
+
+  .header-top {
+    display: flex;
+    margin-top: 25px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 42px;
+    height: 42px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  .greet small {
+    opacity: 0.85;
+    font-size: 13px;
+  }
+
+  .search-app {
+    margin-top: 18px;
+    background: #fff;
+    padding: 12px 14px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+  }
+
+  .search-app input {
+    border: none;
+    outline: none;
+    width: 100%;
+  }
+</style>
+
+<header class="app-header">
+  <div class="header-top">
+    <div class="user-info">
+      <div class="avatar">
+        <img src="{% static 'e.jpeg' %}" style="width: 42px; border-radius: 50%;" alt="Avatar">
+      </div>
+      <div class="greet">
+        <small>CuraZone</small><br>
+
+      </div>
+    </div>
+    
+  </div>
+
+
+</header>

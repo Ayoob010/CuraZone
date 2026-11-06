@@ -1,0 +1,40 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+    <h2>Community Groups</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Group Name</th>
+                <th>Members</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for group in groups %}
+            <tr>
+                <td><strong>{{ group.name }}</strong></td>
+                <td>-</td> <!-- Could show count -->
+                <td>
+                    {% if group.id in joined_group_ids %}
+                    <a href="{% url 'group_chat' group.id %}" class="btn btn-primary"
+                        style="padding:6px 12px; font-size:12px;">Open Chat</a>
+                    <a href="{% url 'leave_group' group.id %}" class="btn btn-danger"
+                        style="padding:6px 12px; font-size:12px;">Leave</a>
+                    {% else %}
+                    <a href="{% url 'join_group' group.id %}" class="btn btn-primary"
+                        style="padding:6px 12px; font-size:12px; background:#10b981;">Join</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align:center; padding:20px; color:#64748b;">No groups available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

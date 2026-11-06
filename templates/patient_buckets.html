@@ -1,0 +1,54 @@
+{% extends 'base_mobile.html' %}
+
+{% block content %}
+<div class="section">
+    <div style="margin-bottom:25px;">
+        <h1 style="margin:0; color:#1e293b; font-size:24px;">Smart Kits</h1>
+        <p style="color:#64748b; font-size:14px; margin-top:5px;">Pre-bundled essentials for your health needs</p>
+    </div>
+
+    {% for bucket in buckets %}
+    <div class="card" style="padding:0; overflow:hidden; margin-bottom:20px;">
+        {% if bucket.image %}
+        <img src="{{ bucket.image.url }}" style="width:100%; height:160px; object-fit:cover;">
+        {% else %}
+        <div style="width:100%; height:160px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:32px;">
+            📦
+        </div>
+        {% endif %}
+        
+        <div style="padding:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
+                <h3 style="margin:0; font-size:18px; color:#1e293b;">{{ bucket.name }}</h3>
+                <span style="font-size:18px; font-weight:800; color:#2563eb;">₹{{ bucket.total_price }}</span>
+            </div>
+            
+            <p style="font-size:13px; color:#64748b; margin-bottom:15px; line-height:1.4;">{{ bucket.description }}</p>
+            
+            <div style="background:#f8fafc; border-radius:12px; padding:12px; margin-bottom:20px;">
+                <strong style="font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Kit Contents:</strong>
+                <div style="margin-top:8px;">
+                    {% for item in bucket.bucket_items.all %}
+                    <div style="display:flex; justify-content:space-between; font-size:13px; color:#334155; margin-bottom:4px;">
+                        <span>{{ item.product.name }}</span>
+                        <span style="color:#94a3b8;">x{{ item.quantity }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <a href="{% url 'add_bucket_to_cart' bucket.id %}" class="btn btn-primary" 
+               style="display:block; width:100%; padding:14px; font-weight:700; font-size:15px; text-decoration:none;">
+                + Add All to Cart
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div style="text-align:center; padding:60px 20px;">
+        <div style="font-size:48px; margin-bottom:20px;">🛍️</div>
+        <h3 style="color:#64748b;">No health kits available yet</h3>
+        <p style="color:#94a3b8; font-size:14px;">Check back later for curated bundles!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base_mobile.html" %}
+{% block content %}
+<div class="section">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0; color: #1a237e; font-size: 1.4rem;">Refills 🗓️</h2>
+        <a href="{% url 'add_refill' %}" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; background: #10b981;">+ New</a>
+    </div>
+
+    {% if refills %}
+        <div style="display: grid; gap: 15px;">
+            {% for refill in refills %}
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 4px 0; color: #1e293b; font-size: 1rem;">{{ refill.product.name }}</h4>
+                    <div style="font-size: 13px; color: #64748b;">
+                        <span>Qty: <strong>{{ refill.quantity }}</strong></span>
+                        <span style="margin: 0 8px; opacity: 0.3;">|</span>
+                        <span style="color: #ef4444;">Due: {{ refill.next_refill_date|date:"d M" }}</span>
+                    </div>
+                </div>
+                <a href="{% url 'delete_refill' refill.id %}" onclick="return confirm('Stop this refill?')" 
+                   style="background: #fee2e2; color: #ef4444; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                    🗑️
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card" style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 40px; margin-bottom: 15px;">🗓️</div>
+            <p style="color: #475569; font-weight: 600; margin-bottom: 8px;">No Refills Scheduled</p>
+            <p style="color: #94a3b8; font-size: 13px; margin: 0;">Set medicines to auto-add to your cart every month.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

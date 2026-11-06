@@ -1,0 +1,81 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h2>Stock Report</h2>
+    <a href="{% url 'add_product' %}" class="btn btn-primary">+ Add Product</a>
+  </div>
+
+  {% if messages %}
+  {% for message in messages %}
+  <div style="background:#d1fae5; color:#065f46; padding:10px 15px; border-radius:8px; margin-bottom:15px; border:1px solid #6ee7b7;">
+    ✅ {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Condition</th>
+        <th>Brand</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Restricted For</th>
+        <th style="text-align:center;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in stock_items %}
+      <tr>
+        <td>
+          {% if p.image %}
+          <img src="{{ p.image.url }}" alt="{{ p.name }}"
+            style="width:50px; height:50px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0;">
+          {% else %}
+          <div style="width:50px; height:50px; background:#f1f5f9; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:22px;">
+            {% if p.category == 'medicine' %}💊{% elif p.category == 'device' %}🩺{% else %}🧴{% endif %}
+          </div>
+          {% endif %}
+        </td>
+        <td><div style="font-weight:600;">{{ p.name }}</div></td>
+        <td>{{ p.category }}</td>
+        <td>{{ p.condition }}</td>
+        <td>{{ p.brand }}</td>
+        <td>
+          {% if p.stock < 10 %}
+            <span style="color:#ef4444; font-weight:600;">{{ p.stock }} (Low)</span>
+          {% else %}
+            <span style="color:#16a34a;">{{ p.stock }}</span>
+          {% endif %}
+        </td>
+        <td>₹{{ p.price }}</td>
+        <td style="font-size:13px; color:#64748b;">{{ p.allergic_to|default:"—" }}</td>
+        <td style="text-align:center; white-space:nowrap;">
+          <a href="{% url 'edit_product' p.id %}"
+            style="display:inline-block; padding:5px 14px; background:#3b82f6; color:#fff; border-radius:6px; text-decoration:none; font-size:13px; margin-right:6px;">
+            ✏️ Edit
+          </a>
+          <form method="post" action="{% url 'delete_product' p.id %}" style="display:inline;"
+            onsubmit="return confirm('Are you sure you want to delete {{ p.name }}?')">
+            {% csrf_token %}
+            <button type="submit"
+              style="padding:5px 14px; background:#ef4444; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:13px;">
+              🗑️ Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="9" style="text-align:center; padding:20px; color:#64748b;">No products available</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

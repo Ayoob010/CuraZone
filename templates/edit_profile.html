@@ -1,0 +1,109 @@
+{% extends 'base_web.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2 style="margin-bottom: 20px;">Edit Profile</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Full Name</label>
+            <input type="text" name="dname" value="{{ request.user.fullname }}" required>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Email (Read-only)</label>
+            <input type="email" value="{{ request.user.email }}" disabled
+                style="background:#f1f5f9; cursor:not-allowed;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Phone</label>
+            <input type="text" name="dphone" value="{{ request.user.phone }}">
+        </div>
+
+        {% if request.user.role == 'doctor' %}
+        <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Specialization</label>
+            <select name="dspecialization">
+                {% for code, name in specializations %}
+                <option value="{{ code }}" {% if request.user.specialization == code %}selected{% endif %}>{{ name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Experience (years)</label>
+            <input type="number" name="dexperience" value="{{ request.user.experience|default:'' }}" min="0">
+        </div>
+
+        {% comment %} <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Consultation Fee</label>
+            <input type="number" name="dfee" value="{{ request.user.fee|default:'' }}">
+        </div> {% endcomment %}
+        {% endif %}
+
+        {% if request.user.role == 'patient' %}
+        <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Age</label>
+            <input type="number" name="age" value="{{ request.user.age|default:'' }}">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+            <div style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom:5px; font-weight:600;">Height (cm)</label>
+                <input type="number" name="height" value="{{ request.user.height_cm|default:'' }}">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom:5px; font-weight:600;">Weight (kg)</label>
+                <input type="number" step="0.1" name="weight" value="{{ request.user.weight_kg|default:'' }}">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Blood Type</label>
+            <select name="blood_type">
+                <option value="">Select Blood Type</option>
+                {% for code, name in blood_types %}
+                <option value="{{ code }}" {% if request.user.blood_type == code %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Gender</label>
+            <select name="gender">
+                <option value="">Select Gender</option>
+                {% for code, name in gender_choices %}
+                <option value="{{ code }}" {% if request.user.gender == code %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">🏥 Health Conditions / Allergies</label>
+            <input type="text" name="health_conditions" value="{{ request.user.health_conditions|default:'' }}"
+                placeholder="e.g. Pregnant, Diabetes, Penicillin allergy (comma separated)">
+            <small style="color:#64748b; font-size:12px; display:block; margin-top:4px;">
+                This helps us show safety warnings on medicines
+            </small>
+        </div>
+        {% endif %}
+
+        <div style="margin-bottom: 20px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600;">Profile Image</label>
+            {% if request.user.profile %}
+            <div style="margin-bottom:10px;">
+                <img src="{{ request.user.profile.url }}"
+                    style="width:60px; height:60px; border-radius:50%; object-fit:cover;">
+            </div>
+            {% endif %}
+            <input type="file" name="dimage">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{% url 'profile' %}" class="btn" style="background:#f1f5f9; color:#333; margin-left:10px;">Cancel</a>
+    </form>
+</div>
+{% endblock %}
